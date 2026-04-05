@@ -22,3 +22,4 @@ class ProxyMiddleware:
             proxy = random.choice(PROXY_LIST)
             request.meta["proxy"] = f"http://{proxy}"
             spider.logger.debug(f"Using proxy: {proxy}")
+
