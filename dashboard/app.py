@@ -206,7 +206,7 @@ def get_seller_info():
 
 
 # ── Load data ─────────────────────────────────────────
-@st.cache_data(ttl=30)
+@st.cache_data(ttl=300)
 def load_data():
     with engine.connect() as conn:
         df = pd.read_sql(
@@ -252,7 +252,6 @@ def main():
     st.sidebar.markdown("---")
 
     models = ["All"] + sorted(df["model"].dropna().unique().tolist())
-    
     selected_model = st.sidebar.selectbox("Bearing Model", models)
 
     sellers = ["All"] + sorted(df["seller_name"].dropna().unique().tolist())
@@ -406,7 +405,9 @@ def main():
 
         st.markdown('<div class="section-head">All Sellers — Latest Prices</div>',
                     unsafe_allow_html=True)
-        table = filtered.sort_values("scraped_at", ascending=False)
+        table = filtered.sort_values(
+            "scraped_at", ascending=False
+        ).groupby(["asin", "seller_name"]).first().reset_index()
         display = table[[
             "asin", "model", "seller_name", "price",
             "mrp", "is_buy_box_winner", "fba_status",

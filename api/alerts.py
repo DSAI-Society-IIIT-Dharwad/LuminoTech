@@ -84,7 +84,11 @@ def send_alert_email(subject: str, body_html: str, to_email: str):
         """
         msg.attach(MIMEText(html, "html"))
 
-        with smtplib.SMTP_SSL("smtp.gmail.com", 465) as server:
+        # Fixed: Using SMTP with STARTTLS on port 587 instead of SMTP_SSL
+        with smtplib.SMTP("smtp.gmail.com", 587) as server:
+            server.ehlo()
+            server.starttls()
+            server.ehlo()
             server.login(GMAIL_USER, GMAIL_APP_PASSWORD)
             server.sendmail(GMAIL_USER, to_email, msg.as_string())
 
